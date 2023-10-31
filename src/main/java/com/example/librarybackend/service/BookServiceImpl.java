@@ -2,6 +2,7 @@ package com.example.librarybackend.service;
 
 import com.example.librarybackend.CustomException;
 import com.example.librarybackend.dao.BookDAO;
+import com.example.librarybackend.dto.PaginationBooksDTO;
 import com.example.librarybackend.entity.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,34 +20,55 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> findAll() {
-        return bookDAO.getBooks();
+        try {
+            return bookDAO.getBooks();
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 
     @Override
     public Book findById(long id) {
-        return bookDAO.getBookById(id);
+        try {
+            return bookDAO.getBookById(id);
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 
     @Override
     public Book save(Book book) {
-        return bookDAO.save(book);
+        try {
+            return bookDAO.save(book);
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 
     @Override
     public Book update(Book book) {
-        return bookDAO.update(book);
+        try {
+            return bookDAO.update(book);
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 
     @Override
     public void deleteById(long id) {
-        bookDAO.deleteBookById(id);
+        try {
+            bookDAO.deleteBookById(id);
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 
     @Override
-    public List<Book> findPaginated(int pageNo, int pageSize) {
-        System.out.println("Here pageNo: " + pageNo + " pageSize: " + pageSize);
-        if(pageNo <= 0 && pageSize <= 0)
-            return findAll();
-        return bookDAO.getBooksPaginated(pageNo, pageSize);
+    public PaginationBooksDTO searchBooks(String title, String category , int pageNo, int pageSize) {
+        try {
+            return bookDAO.searchBooks(title, category, pageNo, pageSize);
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.librarybackend.dao;
 
+import com.example.librarybackend.dto.PaginationBooksDTO;
 import com.example.librarybackend.entity.Book;
 
 import java.util.List;
@@ -12,5 +13,5 @@ public interface BookDAO {
     Book update(Book book);
     void deleteBookById(long id);
 
-    List<Book> getBooksPaginated(int pageNo, int pageSize);
+    PaginationBooksDTO searchBooks(String title, String category, int pageNo, int pageSize);
 }

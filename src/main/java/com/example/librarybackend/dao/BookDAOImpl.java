@@ -1,11 +1,16 @@
 package com.example.librarybackend.dao;
 
+import com.example.librarybackend.dto.BookDTO;
+import com.example.librarybackend.dto.Pagination;
+import com.example.librarybackend.dto.PaginationBooksDTO;
 import com.example.librarybackend.entity.Book;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -67,11 +72,43 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
-    public List<Book> getBooksPaginated(int pageNo, int pageSize) {
-        return entityManager
-                        .createQuery("FROM Book", Book.class)
+    public PaginationBooksDTO searchBooks(String title, String category, int pageNo, int pageSize) {
+        String queryString = "SELECT b FROM Book b WHERE upper(b.title) LIKE :title";
+        String queryCountString = "SELECT count (b) from Book b WHERE upper(b.title) LIKE :title";
+
+        if(!category.isEmpty()) {
+            queryString += " AND b.category=:category";
+            queryCountString += " AND b.category=:category";
+        }
+
+        TypedQuery<Book> query = entityManager
+                        .createQuery(queryString, Book.class)
+                        .setParameter("title", "%" + title.toUpperCase() + "%")
                         .setFirstResult((pageNo) * pageSize)
-                        .setMaxResults(pageSize)
-                        .getResultList();
+                        .setMaxResults(pageSize);
+
+        if(!category.isEmpty()) {
+            query.setParameter("category", category);
+        }
+
+        List<Book> books = query.getResultList();
+
+
+        TypedQuery<Long> countQuery = entityManager.createQuery(queryCountString, Long.class)
+                .setParameter("title", "%" + title.toUpperCase() + "%");
+
+        if(!category.isEmpty()) {
+            countQuery.setParameter("category", category);
+        }
+
+        long totalOfBooks = countQuery.getSingleResult();
+
+        List<BookDTO> bookDTOs = new ArrayList<>();
+        for (Book book : books) {
+            bookDTOs.add(new BookDTO(book));
+        }
+        Pagination pagination = new Pagination(totalOfBooks, pageNo, (int)Math.ceil((double) totalOfBooks / pageSize));
+
+        return new PaginationBooksDTO(bookDTOs, pagination);
     }
 }

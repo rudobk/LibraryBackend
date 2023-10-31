@@ -1,5 +1,6 @@
 package com.example.librarybackend.service;
 
+import com.example.librarybackend.dto.PaginationBooksDTO;
 import com.example.librarybackend.entity.Book;
 
 import java.util.List;
@@ -15,5 +16,5 @@ public interface BookService {
 
     void deleteById(long id);
 
-    List<Book> findPaginated(int pageNo, int pageSize);
+    PaginationBooksDTO searchBooks(String title, String category, int pageNo, int pageSize);
 }
