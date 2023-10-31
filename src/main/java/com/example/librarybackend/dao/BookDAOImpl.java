@@ -47,7 +47,7 @@ public class BookDAOImpl implements BookDAO {
         if(book.getId() == 0)
             entityManager.persist(book);
         else
-            throw new RuntimeException("Just use update for id");
+            throw new RuntimeException("Only for create new book");
         return book;
     }
 
