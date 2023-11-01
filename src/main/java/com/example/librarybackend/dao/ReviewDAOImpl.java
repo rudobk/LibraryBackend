@@ -53,9 +53,9 @@ public class ReviewDAOImpl implements ReviewDAO{
             query.setParameter("bookId", bookId);
         }
         System.out.println(query.getParameter("bookId"));
-        if(pageSize >= 0) {
+        if(pageSize > 0) {
             query.setMaxResults(pageSize);
-            if(pageNo >= 0) {
+            if(pageNo > 0) {
                 query.setFirstResult((pageNo - 1) * pageSize);
             }
         }
@@ -66,12 +66,15 @@ public class ReviewDAOImpl implements ReviewDAO{
                 .createQuery("SELECT COUNT(*) FROM Review WHERE bookId=:bookId", Long.class)
                 .setParameter("bookId", bookId);
         long totalOfReviews = countQuery.getSingleResult();
+        System.out.println(totalOfReviews);
         List<ReviewDTO> reviewDTOs = new ArrayList<>();
         for (Review review: reviews) {
             reviewDTOs.add(new ReviewDTO(review));
         }
 
-        Pagination pagination = new Pagination(totalOfReviews, pageNo, (int)Math.ceil((double) totalOfReviews / pageSize));
+        int totalPages = (pageSize > 0) ? (int)Math.ceil((double) totalOfReviews / pageSize) : 1;
+
+        Pagination pagination = new Pagination(totalOfReviews, pageNo, totalPages);
         return new PaginationReviewDTO(pagination, reviewDTOs);
     }
 }
