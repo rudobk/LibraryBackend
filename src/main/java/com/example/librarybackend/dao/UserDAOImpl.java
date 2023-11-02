@@ -2,6 +2,8 @@ package com.example.librarybackend.dao;
 
 import com.example.librarybackend.entity.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -16,15 +18,21 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User findByEmail(String email) {
-        return entityManager.createQuery("FROM User WHERE userEmail=:email", User.class)
+        try {
+            return entityManager.createQuery("FROM User WHERE userEmail=:email", User.class)
                 .setParameter("email", email)
                 .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        }
     }
 
     @Override
+    @Transactional
     public User save(User user) {
         if(findByEmail(user.getUserEmail()) != null)
             throw new RuntimeException("This email already exists: " + user.getUserEmail());
-        return entityManager.merge(user);
+        entityManager.persist(user);
+        return user;
     }
 }

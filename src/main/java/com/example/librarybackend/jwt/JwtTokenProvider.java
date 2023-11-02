@@ -3,11 +3,8 @@ package com.example.librarybackend.jwt;
 import com.example.librarybackend.entity.CustomUserDetails;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
 
 import java.util.Date;
 
@@ -39,7 +36,7 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
-    public boolean vaidateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parser().setSigningKey(JWT_SECRET).parseClaimsJws(token);
             return true;

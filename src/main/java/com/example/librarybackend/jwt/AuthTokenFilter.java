@@ -1,6 +1,5 @@
 package com.example.librarybackend.jwt;
 
-import com.example.librarybackend.entity.CustomUserDetails;
 import com.example.librarybackend.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +28,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
 
-            if(StringUtils.hasText(jwt) && jwtTokenProvider.vaidateToken(jwt)) {
+            if(StringUtils.hasText(jwt) && jwtTokenProvider.validateToken(jwt)) {
                 String username = jwtTokenProvider.getUsernameFromJWT(jwt);
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 if(userDetails != null) {
@@ -43,11 +42,12 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             System.out.println("Can NOT set user authentication -> Message: {}" + e.getMessage());
         }
+
+        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
-        // Kiß╗âm tra xem header Authorization c├│ chß╗⌐a th├┤ng tin jwt kh├┤ng
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }

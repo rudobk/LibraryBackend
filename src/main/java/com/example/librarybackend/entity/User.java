@@ -6,7 +6,7 @@ import lombok.extern.java.Log;
 
 @Entity
 @Data
-@Table(name = "user")
+@Table(name = "users")
 public class User {
 
     @Id
@@ -25,4 +25,15 @@ public class User {
 
     @Column(name = "role")
     private String role;
+
+    public User(String userEmail, String password, String role) {
+        this.userEmail = userEmail;
+        this.password = password;
+        this.role = role;
+        this.enabled = true;
+    }
+
+    public User() {
+
+    }
 }
