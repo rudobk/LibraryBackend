@@ -28,15 +28,18 @@ public class WebSecurityConfig {
 
     private final AuthEntryPointJwt unauthorizedHandler;
 
+    private JwtTokenProvider jwtTokenProvider;
+
     @Autowired
-    public WebSecurityConfig(UserService userDetailsService, AuthEntryPointJwt unauthorizedHandler) {
+    public WebSecurityConfig(UserService userDetailsService, AuthEntryPointJwt unauthorizedHandler, JwtTokenProvider jwtTokenProvider) {
         this.userDetailsService = userDetailsService;
         this.unauthorizedHandler = unauthorizedHandler;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
-        return new AuthTokenFilter();
+        return new AuthTokenFilter(jwtTokenProvider, userDetailsService);
     }
 
     @Bean
@@ -67,6 +70,9 @@ public class WebSecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/books/**").permitAll()
+                                .requestMatchers("/api/books/secured/**").authenticated()
+                                .requestMatchers("/api/reviews/**").permitAll()
                                 .anyRequest().authenticated()
                 );
 

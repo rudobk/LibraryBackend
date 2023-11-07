@@ -14,4 +14,5 @@ public interface BookDAO {
     void deleteBookById(long id);
 
     PaginationBooksDTO searchBooks(String title, String category, int pageNo, int pageSize);
+
 }

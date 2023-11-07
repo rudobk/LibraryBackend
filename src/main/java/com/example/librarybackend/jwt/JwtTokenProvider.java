@@ -49,6 +49,7 @@ public class JwtTokenProvider {
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty");
         }
+        System.out.println("Here validateToken");
         return false;
     }
 }
