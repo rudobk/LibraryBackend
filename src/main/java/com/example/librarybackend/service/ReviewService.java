@@ -12,7 +12,10 @@ public interface ReviewService {
 
     List<ReviewDTO> getReviewsByBookId(long id);
 
-    ReviewDTO save(ReviewDTO reviewDTO);
+    ReviewDTO findByUserEmailAndBookId(String userEmail, long bookId);
 
+    public Boolean checkIfUserReviewed(String userEmail, long bookId);
+
+    public void postReview(String userEmail, ReviewDTO reviewDTO);
     PaginationReviewDTO searchReviews(int bookId, int pageNo, int pageSize);
 }

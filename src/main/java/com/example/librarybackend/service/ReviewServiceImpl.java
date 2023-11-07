@@ -1,11 +1,14 @@
 package com.example.librarybackend.service;
 
+import com.example.librarybackend.CustomException;
 import com.example.librarybackend.dao.ReviewDAO;
 import com.example.librarybackend.dto.PaginationReviewDTO;
 import com.example.librarybackend.dto.ReviewDTO;
 import com.example.librarybackend.entity.Review;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,17 +31,35 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public ReviewDTO save(ReviewDTO reviewDTO) {
-        Review review = new Review();
-        review.setReviewDescription(reviewDTO.getReviewDescription());
-        review.setRating(reviewDTO.getRating());
-        review.setUserEmail(reviewDTO.getUserEmail());
-        review.setBookId(reviewDTO.getBookId());
-        review.setId(reviewDTO.getId());
-        review.setDate(reviewDTO.getDate());
+    public ReviewDTO findByUserEmailAndBookId(String userEmail, long bookId) {
+        Review review = reviewDAO.findByUserEmailAndBookId(userEmail, bookId);
+        if(review == null)
+            return null;
+        return new ReviewDTO(review);
+    }
 
-        Review savedReview = reviewDAO.save(review);
-        return new ReviewDTO(savedReview);
+    @Override
+    public Boolean checkIfUserReviewed(String userEmail, long bookId) {
+        ReviewDTO reviewDTO = findByUserEmailAndBookId(userEmail, bookId);
+        return reviewDTO != null;
+    }
+
+    @Override
+    public void postReview(String userEmail, ReviewDTO reviewDTO) {
+        ReviewDTO validateReview = findByUserEmailAndBookId(userEmail, reviewDTO.getBookId());
+        if(validateReview != null) {
+            throw new CustomException("Review already created");
+        }
+
+        Review review = new Review();
+        review.setBookId(reviewDTO.getBookId());
+        review.setUserEmail(reviewDTO.getUserEmail());
+        if(reviewDTO.getReviewDescription() != null)
+            review.setReviewDescription(reviewDTO.getReviewDescription());
+        review.setRating(reviewDTO.getRating());
+        review.setDate(Date.valueOf(LocalDate.now()));
+
+        reviewDAO.save(review);
     }
 
     @Override

@@ -2,13 +2,17 @@ package com.example.librarybackend.controller;
 
 import com.example.librarybackend.CustomException;
 import com.example.librarybackend.dto.BookDTO;
+import com.example.librarybackend.dto.ShelfCurrentLoansDTO;
 import com.example.librarybackend.service.BookService;
 import com.example.librarybackend.service.CheckoutService;
 import com.example.librarybackend.service.CheckoutServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:8080")
@@ -41,5 +45,12 @@ public class CheckoutController {
     public Integer currentLoansCount() throws Exception {
         String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
         return checkoutService.currentLoansCount(userEmail);
+    }
+
+    @GetMapping(value = "/secured/currentloans")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<ShelfCurrentLoansDTO> currentLoans() throws Exception {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return checkoutService.currentLoans(userEmail);
     }
 }

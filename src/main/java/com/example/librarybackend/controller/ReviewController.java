@@ -8,6 +8,8 @@ import com.example.librarybackend.entity.Review;
 import com.example.librarybackend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,14 +26,23 @@ public class ReviewController {
     }
 
     @GetMapping(value = "/reviews/{id}")
-    List<ReviewDTO> getReviewsByBookId(@PathVariable long id) {
+    public List<ReviewDTO> getReviewsByBookId(@PathVariable long id) {
         return reviewService.getReviewsByBookId(id);
     }
 
-    @PostMapping(value = "/reviews/{id}")
-    ReviewDTO save(@RequestBody ReviewDTO reviewDTO, @PathVariable long id) {
-        reviewDTO.setId(id);
-        return reviewService.save(reviewDTO);
+    @PostMapping(value = "/reviews/secured")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public void postReview(@RequestBody ReviewDTO reviewDTO) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        reviewDTO.setUserEmail(userEmail);
+        reviewService.postReview(userEmail, reviewDTO);
+    }
+
+    @GetMapping(value = "/reviews/secured/user/book")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public Boolean checkIfUserReviewed(@RequestParam Long bookId) {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return reviewService.checkIfUserReviewed(userEmail, bookId);
     }
 
     @GetMapping(value = "/reviews")

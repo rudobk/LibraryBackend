@@ -10,5 +10,7 @@ public interface ReviewDAO {
     Review save(Review review);
     List<Review> getReviewsByBookId(long id);
 
+    Review findByUserEmailAndBookId(String userEmail, long bookId);
+
     PaginationReviewDTO searchReviews(int bookId, int pageNo, int pageSize);
 }

@@ -6,7 +6,9 @@ import com.example.librarybackend.entity.Book;
 import com.example.librarybackend.entity.Review;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -24,6 +26,7 @@ public class ReviewDAOImpl implements ReviewDAO{
     }
 
     @Override
+    @Transactional
     public Review save(Review review) {
         if(review.getId() == 0)
             entityManager.persist(review);
@@ -73,5 +76,20 @@ public class ReviewDAOImpl implements ReviewDAO{
 
         Pagination pagination = new Pagination(totalOfReviews, pageNo, totalPages);
         return new PaginationReviewDTO(pagination, reviewDTOs);
+    }
+
+    @Override
+    public Review findByUserEmailAndBookId(String userEmail, long bookId) {
+        try {
+            return entityManager
+                    .createQuery("FROM Review WHERE userEmail=:userEmail AND bookId=:bookId", Review.class)
+                    .setParameter("userEmail", userEmail)
+                    .setParameter("bookId", bookId)
+                    .getSingleResult();
+        } catch (NoResultException ex) {
+            return null;
+        } catch (Exception ex) {
+            throw new CustomException(ex.getMessage());
+        }
     }
 }

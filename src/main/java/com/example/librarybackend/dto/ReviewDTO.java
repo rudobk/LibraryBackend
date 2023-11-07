@@ -7,7 +7,6 @@ import java.util.Date;
 
 @Data
 public class ReviewDTO {
-    private long id;
     private String userEmail;
     private Date date;
     private float rating;
@@ -15,11 +14,16 @@ public class ReviewDTO {
     private String reviewDescription;
 
     public ReviewDTO(Review review) {
-        setId(review.getId());
         setUserEmail(review.getUserEmail());
         setDate(review.getDate());
         setRating(review.getRating());
         setBookId(review.getBookId());
         setReviewDescription(review.getReviewDescription());
+    }
+
+    public ReviewDTO(float rating, int bookId, String reviewDescription) {
+        this.rating = rating;
+        this.bookId = bookId;
+        this.reviewDescription = reviewDescription;
     }
 }

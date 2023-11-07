@@ -116,4 +116,11 @@ public class BookDAOImpl implements BookDAO {
 
         return new PaginationBooksDTO(bookDTOs, pagination);
     }
+
+    @Override
+    public List<Book> getBooksByIds(List<Long> ids) {
+        return entityManager.createQuery("FROM Book WHERE id IN (:ids)", Book.class)
+                .setParameter("ids", ids)
+                .getResultList();
+    }
 }

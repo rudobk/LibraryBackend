@@ -15,4 +15,5 @@ public interface BookDAO {
 
     PaginationBooksDTO searchBooks(String title, String category, int pageNo, int pageSize);
 
+    List<Book> getBooksByIds(List<Long> ids);
 }
