@@ -6,7 +6,9 @@ import com.example.librarybackend.dto.PaginationBooksDTO;
 import com.example.librarybackend.entity.Book;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.Transient;
 import jakarta.persistence.TypedQuery;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -43,6 +45,7 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
+    @Transactional
     public Book save(Book book) {
         if(book.getId() == 0)
             entityManager.persist(book);
@@ -52,6 +55,7 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
+    @Transactional
     public Book update(Book book) {
         Book theBook = getBookById(book.getId());
         if(theBook == null)
@@ -61,6 +65,7 @@ public class BookDAOImpl implements BookDAO {
     }
 
     @Override
+    @Transactional
     public void deleteBookById(long id) {
         Book theBook = getBookById(id);
         if(theBook == null)

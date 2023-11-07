@@ -68,19 +68,18 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signupAuthenticator(@Valid @RequestBody SignupRequest signupRequest) {
-        System.out.println(signupRequest);
         if(userDAO.findByEmail(signupRequest.getUsername()) != null) {
             return ResponseEntity.badRequest().body("User already exists");
         }
 
-        String role = "USER";
+        String role = "ROLE_USER";
 
         if(signupRequest.getRole() != null) {
             switch (signupRequest.getRole()) {
                 case "ADMIN":
-                    role = "ADMIN";
+                    role = "ROLE_ADMIN";
                 default:
-                    role = "USER";
+                    role = "ROLE_USER";
             }
         }
         User user = new User(signupRequest.getUsername(), passwordEncoder.encode(signupRequest.getPassword()), role);

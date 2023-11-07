@@ -1,5 +1,6 @@
 package com.example.librarybackend.service;
 
+import com.example.librarybackend.CustomException;
 import com.example.librarybackend.dao.BookDAO;
 import com.example.librarybackend.dao.CheckoutDAO;
 import com.example.librarybackend.dto.BookDTO;
@@ -10,6 +11,7 @@ import com.example.librarybackend.entity.User;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -36,7 +38,7 @@ public class CheckoutServiceImpl implements CheckoutService{
         Book book = bookDAO.getBookById(bookId);
         Checkout validateCheckout = checkoutDAO.findCheckoutByUserEmailAndBookId(userEmail, bookId);
         if(book == null || validateCheckout != null || book.getCopiesAvailable() <= 0)
-            throw new Exception("Book already checked out");
+            throw new CustomException("Book already checked out");
 
         book.setCopiesAvailable(book.getCopiesAvailable() - 1);
         bookDAO.update(book);
@@ -50,5 +52,16 @@ public class CheckoutServiceImpl implements CheckoutService{
 
         checkoutDAO.save(checkout);
         return new BookDTO(book);
+    }
+
+    public Boolean checkoutBookByUser(String userEmail, long bookId) throws Exception {
+        Checkout checkout = checkoutDAO.findCheckoutByUserEmailAndBookId(userEmail, bookId);
+        return checkout != null;
+    }
+
+    @Override
+    public int currentLoansCount(String userEmail) {
+        List<Checkout> checkouts = checkoutDAO.getCheckoutsByUserEmail(userEmail);
+        return checkouts.size();
     }
 }

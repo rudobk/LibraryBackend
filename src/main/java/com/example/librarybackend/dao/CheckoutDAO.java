@@ -9,4 +9,6 @@ public interface CheckoutDAO {
     Checkout findCheckoutByUserEmailAndBookId(String userEmail, long bookId);
 
     Checkout save(Checkout checkout);
+
+    List<Checkout> getCheckoutsByUserEmail(String userEmail);
 }

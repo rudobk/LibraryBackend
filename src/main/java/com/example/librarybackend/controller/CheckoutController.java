@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8080")
 @RequestMapping("/api/books")
 public class CheckoutController {
 
@@ -26,7 +26,20 @@ public class CheckoutController {
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public BookDTO checkoutBook(@RequestParam long bookId) throws Exception {
         String UserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        System.out.println(UserEmail);
         return checkoutService.checkoutBook(UserEmail, bookId);
+    }
+
+    @GetMapping(value = "/secured/ischeckedout/byuser")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public Boolean checkedOutByUser(@RequestParam long bookId) throws Exception {
+        String UserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return checkoutService.checkoutBookByUser(UserEmail, bookId);
+    }
+
+    @GetMapping(value = "/secured/currentloans/count")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public Integer currentLoansCount() throws Exception {
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        return checkoutService.currentLoansCount(userEmail);
     }
 }
