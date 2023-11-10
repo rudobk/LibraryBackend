@@ -10,5 +10,10 @@ public interface CheckoutDAO {
 
     Checkout save(Checkout checkout);
 
+    Checkout update(Checkout checkout);
     List<Checkout> getCheckoutsByUserEmail(String userEmail);
+
+    Checkout getCheckoutById(long id);
+
+    void deleteCheckoutById(long id);
 }

@@ -3,14 +3,18 @@ package com.example.librarybackend.service;
 import com.example.librarybackend.CustomException;
 import com.example.librarybackend.dao.BookDAO;
 import com.example.librarybackend.dao.CheckoutDAO;
+import com.example.librarybackend.dao.HistoryDAO;
 import com.example.librarybackend.dto.BookDTO;
 import com.example.librarybackend.dto.CheckoutDTO;
+import com.example.librarybackend.dto.PaginationHistoriesDTO;
 import com.example.librarybackend.dto.ShelfCurrentLoansDTO;
 import com.example.librarybackend.entity.Book;
 import com.example.librarybackend.entity.Checkout;
-import com.example.librarybackend.entity.User;
+import com.example.librarybackend.entity.History;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -25,9 +29,13 @@ public class CheckoutServiceImpl implements CheckoutService{
 
     BookDAO bookDAO;
 
-    public CheckoutServiceImpl(CheckoutDAO checkoutDAO, BookDAO bookDAO) {
+    HistoryDAO historyDAO;
+
+    @Autowired
+    public CheckoutServiceImpl(CheckoutDAO checkoutDAO, BookDAO bookDAO, HistoryDAO historyDAO) {
         this.checkoutDAO = checkoutDAO;
         this.bookDAO = bookDAO;
+        this.historyDAO = historyDAO;
     }
 
     @Override
@@ -57,6 +65,40 @@ public class CheckoutServiceImpl implements CheckoutService{
 
         checkoutDAO.save(checkout);
         return new BookDTO(book);
+    }
+
+    @Override
+    public void returnBook(String userEmail, long bookId) throws Exception {
+        Book book = bookDAO.getBookById(bookId);
+        Checkout checkout = checkoutDAO.findCheckoutByUserEmailAndBookId(userEmail, bookId);
+        if(checkout == null || book == null)
+            throw new CustomException("Book does not exists or not checked out by user");
+
+        book.setCopiesAvailable(book.getCopiesAvailable() + 1);
+
+        bookDAO.update(book);
+        checkoutDAO.deleteCheckoutById(checkout.getId());
+        History history = new History(
+                checkout.getUserEmail(),
+                checkout.getCheckoutDate(),
+                LocalDate.now().toString(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getDescription(),
+                book.getImg()
+        );
+        System.out.println("Add history :" + history.getTitle() + history.getUserEmail() + " " + history.getId());
+        historyDAO.save(history);
+    }
+
+    @Override
+    public void renewBook(String userEmail, long bookId) throws Exception {
+        Checkout checkout = checkoutDAO.findCheckoutByUserEmailAndBookId(userEmail, bookId);
+        if(checkout == null)
+            throw new CustomException("Checkout not exists");
+        checkout.setReturnDate(LocalDate.now().plusDays(7).toString());
+
+        checkoutDAO.update(checkout);
     }
 
     public Boolean checkoutBookByUser(String userEmail, long bookId) throws Exception {
@@ -103,5 +145,10 @@ public class CheckoutServiceImpl implements CheckoutService{
         }
 
         return shelfCurrentLoansDTOs;
+    }
+
+    @Override
+    public PaginationHistoriesDTO getHistory(String userEmail, int pageNo, int pageSize) throws Exception {
+        return historyDAO.findHistoryByEmail(userEmail, pageNo, pageSize);
     }
 }

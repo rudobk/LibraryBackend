@@ -40,8 +40,13 @@ public class CheckoutDAOImpl implements CheckoutDAO{
     @Transactional
     public Checkout save(Checkout checkout) {
         entityManager.persist(checkout);
-
         return checkout;
+    }
+
+    @Override
+    @Transactional
+    public Checkout update(Checkout checkout) {
+        return entityManager.merge(checkout);
     }
 
     @Override
@@ -50,5 +55,24 @@ public class CheckoutDAOImpl implements CheckoutDAO{
                 .createQuery("FROM Checkout WHERE userEmail=:userEmail", Checkout.class)
                 .setParameter("userEmail", userEmail)
                 .getResultList();
+    }
+
+    @Override
+    public Checkout getCheckoutById(long id) {
+        return entityManager.createQuery("FROM Checkout WHERE id=:id", Checkout.class)
+                .setParameter("id", id)
+                .getSingleResult();
+    }
+
+    @Override
+    @Transactional
+    public void deleteCheckoutById(long id) {
+        Checkout checkout = getCheckoutById(id);
+        if(checkout == null)
+            throw new CustomException("Checkout does not exists");
+
+        entityManager.createQuery("DELETE FROM Checkout WHERE id= :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 }
