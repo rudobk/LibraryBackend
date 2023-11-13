@@ -1,13 +1,12 @@
 package com.example.librarybackend.controller;
 
 import com.example.librarybackend.dao.UserDAO;
-import com.example.librarybackend.dto.JwtResponse;
-import com.example.librarybackend.dto.LoginRequest;
-import com.example.librarybackend.dto.SignupRequest;
+import com.example.librarybackend.response.JwtResponse;
+import com.example.librarybackend.request.LoginRequest;
+import com.example.librarybackend.request.SignupRequest;
 import com.example.librarybackend.entity.CustomUserDetails;
 import com.example.librarybackend.entity.User;
 import com.example.librarybackend.jwt.JwtTokenProvider;
-import com.example.librarybackend.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
