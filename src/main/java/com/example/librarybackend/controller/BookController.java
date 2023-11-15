@@ -35,13 +35,4 @@ public class BookController {
             throw new CustomException(ex.getMessage());
         }
     }
-
-//    @DeleteMapping(value = "books/{id}")
-//    public void deleteBookById(@PathVariable long id) {
-//        try {
-//            bookService.deleteById(id);
-//        } catch (Exception ex) {
-//            throw new CustomException(ex.getMessage());
-//        }
-//    }
 }
